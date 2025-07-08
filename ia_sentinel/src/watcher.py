@@ -4,7 +4,7 @@ from preprocessing import preprocess_logs
 from anomaly_detection import detect_anomalies
 from export_results import export_final_results
 
-RAW_DIR = os.path.join('data', 'raw')
+RAW_DIR = '/var/log/wireshark'  # Chemin absolu pour les logs sur le serveur Linux
 PROCESSED_DIR = os.path.join('data', 'processed')
 CHECK_INTERVAL = 5  # secondes
 
@@ -29,7 +29,7 @@ def process_log_file(filename):
     print(f"Fichiers générés et ajoutés à final_results.csv pour {filename}.")
 
 def main():
-    print("Surveillance du dossier data/raw/ ...")
+    print("Surveillance du dossier /var/log/wireshark ...")
     while True:
         for filename in os.listdir(RAW_DIR):
             if filename.endswith('.csv'):
