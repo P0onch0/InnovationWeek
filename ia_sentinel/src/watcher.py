@@ -29,7 +29,14 @@ def process_log_file(filename):
     print(f"Fichiers générés et ajoutés à final_results.csv pour {filename}.")
 
 def main():
-    print("Surveillance du dossier /var/log/wireshark ...")
+    # Vérifie et crée les dossiers si besoin
+    if not os.path.exists(RAW_DIR):
+        print(f"Le dossier {RAW_DIR} n'existe pas. Création ...")
+        os.makedirs(RAW_DIR, exist_ok=True)
+    if not os.path.exists(PROCESSED_DIR):
+        os.makedirs(PROCESSED_DIR, exist_ok=True)
+
+    print(f"Surveillance du dossier {RAW_DIR} ...")
     while True:
         for filename in os.listdir(RAW_DIR):
             if filename.endswith('.csv'):
