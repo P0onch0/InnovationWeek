@@ -26,11 +26,23 @@ def preprocess_logs(input_path, output_path):
     df['resp_bytes'] = 0
 
     # Conversion du timestamp en numérique (timestamp UNIX)
-    # Si la colonne 'ts' est déjà au format numérique, cette étape est ignorée
-    try:
-        df['ts'] = pd.to_datetime(df['ts'], errors='coerce').astype('int64') // 10**9
-    except Exception:
-        pass
+    # On force le format pour éviter les erreurs et warnings
+    # Exemple de format : "Jul  8, 2025 10:04:04.514970542 CEST"
+    # On ignore le fuseau horaire et les microsecondes pour simplifier
+    def parse_time(val):
+        try:
+            # Retire le fuseau horaire (dernier mot)
+            val = " ".join(val.split(" ")[:-1])
+            # Retire les microsecondes si présentes
+            if "." in val:
+                val = val.split(".")[0]
+            # Format sans microsecondes : "Jul  8, 2025 10:04:04"
+            return pd.to_datetime(val, format="%b %d, %Y %H:%M:%S", errors="coerce").timestamp()
+        except Exception:
+            return 0
+
+    df['ts'] = df['ts'].astype(str).apply(parse_time)
+    df['ts'] = pd.to_numeric(df['ts'], errors='coerce').fillna(0)
 
     # Encodage du protocole si besoin
     if df['proto'].dtype == object:
